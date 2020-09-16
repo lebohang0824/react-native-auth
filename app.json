@@ -1,0 +1,12 @@
+{
+  "name": "Coolbox",
+  "displayName": "Coolbox",
+  "expo": {
+    "name": "Coolbox",
+    "slug": "Coolbox",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
