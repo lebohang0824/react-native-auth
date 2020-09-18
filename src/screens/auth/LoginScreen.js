@@ -1,7 +1,7 @@
 import React from 'react';
+import client from '../../helpers/Client';
 import { StatusBar } from 'expo-status-bar';
 import { saveToken } from '../../helpers/LocalStore';
-import axios from 'axios';
 
 import { 
     ActivityIndicator,
@@ -26,9 +26,11 @@ import imgMain from '../../assets/images/1.png';
 export default function LoginScreen({ navigation }) {
 
     const [type, setType] = React.useState('');
+    const [response, setResponse] = React.useState('');
+    const [loading, setLoading] = React.useState(false);
+
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
 
     const onLogin = () => {
 
@@ -41,15 +43,16 @@ export default function LoginScreen({ navigation }) {
 
         setLoading(true);
 
-        axios.post('https://0b854293ec94.ngrok.io/api/login', inputs)
+        client.post('login', inputs)
             .then(async ({ data }) => {
                 const { success, message } = data;
 
                 // Stop loading
                 setLoading(false);
 
+                setResponse(message);
+
                 if (success) {
-                    setType('success')
 
                     // Save login token
                     await saveToken(message);
@@ -57,6 +60,8 @@ export default function LoginScreen({ navigation }) {
                     // Reset
                     setEmail('')
                     setPassword('')
+
+                    navigation.navigate('Home');
                 } else {
                     setType('danger')
                 }
@@ -91,12 +96,10 @@ export default function LoginScreen({ navigation }) {
                                 <ActivityIndicator size="large" />
                             </View>
                         )}
-                        
-                        { type === 'success' && 
-                            <Alert type="success" message="Thank you for your login!" />}
                             
                         { type === 'danger' && 
-                            <Alert type="danger" message="Thank you for your login!" />}
+                            <Alert type="danger" message={response} />
+                        }
                         
                         <Text style={styles.label}>
                             E-mail Address

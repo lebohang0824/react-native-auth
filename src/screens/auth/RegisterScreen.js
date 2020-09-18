@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import client from '../../helpers/Client';
 import { StatusBar } from 'expo-status-bar';
 
 import { 
@@ -23,30 +24,36 @@ import Button from '../../components/form/Button'
 export default function RegisterScreen({ navigation }) {
 
     const [type, setType] = React.useState('');
+    const [loading, setLoading] = React.useState(false);
+    const [response, setResponse] = React.useState('');
+
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [rpassword, setRPassword] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
+    
 
     const onRegister = () => {
 
         const inputs = {
             name: name,
             email: email,
-            password: password
+            password: password,
+            password_confirmation: rpassword,
         }
 
         if (type) setType('');
 
         setLoading(true);
 
-        axios.post('https://0b854293ec94.ngrok.io/api/register', inputs)
+        client.post('register', inputs)
             .then(({ data }) => {
                 const { success, message } = data;
 
                 // Stop loading
                 setLoading(false);
+
+                setResponse(message);
 
 
                 if (success) {
@@ -56,6 +63,7 @@ export default function RegisterScreen({ navigation }) {
                     setName('')
                     setEmail('')
                     setPassword('')
+                    setRPassword('')
                 } else {
                     setType('danger')
                 }
@@ -89,16 +97,16 @@ export default function RegisterScreen({ navigation }) {
                         )}
 
                         { type === 'success' && 
-                            <Alert type="success" message="Thank you for your login!" /> }
+                            <Alert type="success" message={response} /> }
 
                         { type === 'danger' && 
-                            <Alert type="danger" message="Thank you for your login!" /> }
+                            <Alert type="danger" message={response} /> }
 
                         <Text style={styles.label}>
                             Full Name
                         </Text>
                         <Input 
-                            value={email}
+                            value={name}
                             placeholder="Full Name" 
                             onChangeText={
                                 text => setName(text)
